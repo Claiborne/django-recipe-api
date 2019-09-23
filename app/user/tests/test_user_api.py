@@ -52,45 +52,46 @@ class PublicUserAPITests(TestCase):
         ).exists()
         self.assertFalse(user_exists)
 
-        def test_create_token_for_user(self):
-            """Test a token is created for user"""
-            payload = {'email': 'test@claiborne.com', 'password': 'testpass'}
-            create_user(**payload)
-            response = self.client.post(TOKEN_URL, payload)
+    def test_create_token_for_user(self):
+        """Test a token is created for user"""
+        payload = {'email': 'test@claiborne.com', 'password': 'testpass'}
+        create_user(**payload)
+        response = self.client.post(TOKEN_URL, payload)
 
-            self.assertIn('token', response.data)
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        def test_create_token_with_invalid_credentials(self):
-            """Test token is not created if invalid credentials given"""
-            create_user(email='test@claiborne.com', password='testpass')
-            payload = {'email': 'test@claiborne.com', 'password': 'wrong'}
-            response = self.client.post(TOKEN_URL, payload)
+    def test_create_token_with_invalid_credentials(self):
+        """Test token is not created if invalid credentials given"""
+        create_user(email='test@claiborne.com', password='testpass')
+        payload = {'email': 'test@claiborne.com', 'password': 'wrong'}
+        response = self.client.post(TOKEN_URL, payload)
 
-            self.assertNotIn('token', response.data)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        def test_create_token_with_no_user(self):
-            """Test token is not created if no user is given"""
-            payload = {'email': 'test@claiborne.com', 'password': 'testpass'}
-            response = self.client.post(TOKEN_URL, payload)
+    def test_create_token_with_no_user(self):
+        """Test token is not created if no user is given"""
+        payload = {'email': 'test@claiborne.com', 'password': 'testpass'}
+        response = self.client.post(TOKEN_URL, payload)
 
-            self.assertNotIn('token', response.data)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        def test_create_token_with_no_fields(self):
-            """Test email and password fields are required"""
-            payload = {'email': 'one', 'password': ''}
-            response = self.client.post(TOKEN_URL, payload)
+    def test_create_token_with_no_fields(self):
+        """Test email and password fields are required"""
+        payload = {'email': 'one', 'password': ''}
+        response = self.client.post(TOKEN_URL, payload)
 
-            self.assertNotIn('token', response.data)
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn('token', response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        def test_retrieve_user_unauthorized(self):
-            """Test that authentication is required for users"""
-            response = self.client.get(ME_URL)
+    def test_retrieve_user_unauthorized(self):
+        """Test authentication is required for users"""
+        response = self.client.get(ME_URL)
 
-            self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 
 class PrivateUserAPITests(TestCase):
